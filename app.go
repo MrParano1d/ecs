@@ -26,6 +26,12 @@ func (a *App) AddSystem(system ...System) {
 	a.systems = append(a.systems, system...)
 }
 
+func (a *App) AddPlugin(plugin ...Plugin) {
+	for _, p := range plugin {
+		p.Build(a)
+	}
+}
+
 func (a *App) Cancel() {
 	a.running = false
 }
