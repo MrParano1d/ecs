@@ -97,31 +97,13 @@ func TestApp_AddEvent(t *testing.T) {
 }
 
 type AppRenderStage struct {
-	systems       []ecs.System
-	startUpSystem []ecs.StartUpSystem
+	ecs.Stage
 }
 
 func NewAppRenderStage() *AppRenderStage {
 	return &AppRenderStage{
-		systems:       []ecs.System{},
-		startUpSystem: []ecs.StartUpSystem{},
+		Stage: ecs.NewDefaultStage(),
 	}
-}
-
-func (a *AppRenderStage) AddStartUpSystem(fn ...ecs.StartUpSystem) {
-	a.startUpSystem = append(a.startUpSystem, fn...)
-}
-
-func (a *AppRenderStage) AddSystem(system ...ecs.System) {
-	a.systems = append(a.systems, system...)
-}
-
-func (a *AppRenderStage) StartUpSystems() []ecs.StartUpSystem {
-	return a.startUpSystem
-}
-
-func (a *AppRenderStage) Systems() []ecs.System {
-	return a.systems
 }
 
 func TestApp_AddSystemToStage(t *testing.T) {

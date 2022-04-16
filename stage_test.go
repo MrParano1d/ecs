@@ -56,72 +56,15 @@ func TestStageOrder_InsertBefore(t *testing.T) {
 }
 
 type UpdateStage struct {
-}
-
-func (u *UpdateStage) AddStartUpSystem(_ ...ecs.StartUpSystem) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *UpdateStage) AddSystem(_ ...ecs.System) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *UpdateStage) StartUpSystems() []ecs.StartUpSystem {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *UpdateStage) Systems() []ecs.System {
-	//TODO implement me
-	panic("implement me")
+	ecs.Stage
 }
 
 type RenderStage struct {
-}
-
-func (u *RenderStage) AddStartUpSystem(_ ...ecs.StartUpSystem) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *RenderStage) AddSystem(_ ...ecs.System) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *RenderStage) StartUpSystems() []ecs.StartUpSystem {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *RenderStage) Systems() []ecs.System {
-	//TODO implement me
-	panic("implement me")
+	ecs.Stage
 }
 
 type DebugStage struct {
-}
-
-func (d *DebugStage) AddStartUpSystem(_ ...ecs.StartUpSystem) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (d *DebugStage) AddSystem(_ ...ecs.System) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (d *DebugStage) StartUpSystems() []ecs.StartUpSystem {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (d *DebugStage) Systems() []ecs.System {
-	//TODO implement me
-	panic("implement me")
+	ecs.Stage
 }
 
 func TestNewStages(t *testing.T) {

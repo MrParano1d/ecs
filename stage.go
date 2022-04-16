@@ -120,30 +120,45 @@ type Stage interface {
 	Systems() []System
 }
 
-type UpdateStage struct {
+type DefaultStage struct {
 	startUpSystems []StartUpSystem
 	systems        []System
 }
 
-func NewUpdateStage() *UpdateStage {
-	return &UpdateStage{
-		startUpSystems: []StartUpSystem{TimerStartUp()},
-		systems:        []System{TimerSystem()},
+func NewDefaultStage() *DefaultStage {
+	return &DefaultStage{
+		startUpSystems: []StartUpSystem{},
+		systems:        []System{},
 	}
 }
 
-func (s *UpdateStage) AddStartUpSystem(fn ...StartUpSystem) {
+func (s *DefaultStage) AddStartUpSystem(fn ...StartUpSystem) {
 	s.startUpSystems = append(s.startUpSystems, fn...)
 }
 
-func (s *UpdateStage) AddSystem(system ...System) {
+func (s *DefaultStage) AddSystem(system ...System) {
 	s.systems = append(s.systems, system...)
 }
 
-func (s *UpdateStage) StartUpSystems() []StartUpSystem {
+func (s *DefaultStage) StartUpSystems() []StartUpSystem {
 	return s.startUpSystems
 }
 
-func (s *UpdateStage) Systems() []System {
+func (s *DefaultStage) Systems() []System {
 	return s.systems
+}
+
+type UpdateStage struct {
+	Stage
+}
+
+func NewUpdateStage() *UpdateStage {
+	s := &UpdateStage{
+		Stage: NewDefaultStage(),
+	}
+
+	s.AddStartUpSystem(TimerStartUp())
+	s.AddSystem(TimerSystem())
+
+	return s
 }
