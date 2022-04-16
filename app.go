@@ -5,49 +5,100 @@ type App struct {
 
 	running bool
 
-	startUpSystems []StartUpSystem
-	systems        []System
+	stages *Stages
+
+	events EventMap
 }
 
 func NewApp() *App {
+	stages := NewStages()
+	stages.Add(StageUpdate, NewUpdateStage())
 	return &App{
-		world:          NewWorld(),
-		startUpSystems: []StartUpSystem{},
-		systems:        []System{},
-		running:        true,
+		world:   NewWorld(),
+		running: true,
+		stages:  stages,
+		events:  EventMap{},
 	}
 }
 
-func (a *App) AddStartUpSystem(fn ...StartUpSystem) {
-	a.startUpSystems = append(a.startUpSystems, fn...)
+func (a *App) AddStage(stageName string, stage Stage) *App {
+	a.stages.Add(stageName, stage)
+	return a
 }
 
-func (a *App) AddSystem(system ...System) {
-	a.systems = append(a.systems, system...)
+func (a *App) AddStageBefore(beforeStageName string, stageName string, stage Stage) *App {
+	a.stages.AddBefore(beforeStageName, stageName, stage)
+	return a
 }
 
-func (a *App) AddPlugin(plugin ...Plugin) {
+func (a *App) AddStageAfter(afterStageName string, stageName string, stage Stage) *App {
+	a.stages.AddAfter(afterStageName, stageName, stage)
+	return a
+}
+
+func (a *App) AddStartUpSystem(fn ...StartUpSystem) *App {
+	return a.AddStartUpSystemToStage(StageUpdate, fn...)
+}
+
+func (a *App) AddStartUpSystemToStage(stageName string, fn ...StartUpSystem) *App {
+	a.stages.GetStage(stageName).AddStartUpSystem(fn...)
+	return a
+}
+
+func (a *App) AddSystem(system ...System) *App {
+	return a.AddSystemToStage(StageUpdate, system...)
+}
+
+func (a *App) AddSystemToStage(stageName string, system ...System) *App {
+	a.stages.GetStage(stageName).AddSystem(system...)
+	return a
+}
+
+func (a *App) AddPlugin(plugin ...Plugin) *App {
 	for _, p := range plugin {
 		p.Build(a)
 	}
+	return a
+}
+
+func (a *App) AddEvent(cb EventInvoker) {
+	cb(a.events)
+}
+
+func (a *App) Events() EventMap {
+	return a.events
 }
 
 func (a *App) Cancel() {
 	a.running = false
 }
 
+func (a *App) FlushEvents() {
+	for _, w := range a.events {
+		w.Flush()
+	}
+}
+
 func (a *App) Run() error {
 
-	queue := NewQueue()
-	for _, fn := range a.startUpSystems {
-		fn(NewCommands(queue, a.world))
+	for _, stage := range a.stages.GetOrderedStages() {
+		queue := NewQueue()
+		for _, fn := range stage.StartUpSystems() {
+			fn(NewCommands(queue, a.world))
+		}
+		queue.Apply(a.world)
 	}
-	queue.Apply(a.world)
 
 	for a.running {
-		for _, s := range a.systems {
-			s(NewSystemContext(a.world))
+		for _, stage := range a.stages.GetOrderedStages() {
+			queue := NewQueue()
+			for _, system := range stage.Systems() {
+				system(NewSystemContext(a.world, NewCommands(queue, a.world), a.Events()))
+			}
+			queue.Apply(a.world)
 		}
+
+		a.FlushEvents()
 	}
 
 	return nil

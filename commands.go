@@ -16,8 +16,17 @@ func NewCommands(queue *Queue, world *World) *Commands {
 	}
 }
 
-func (c *Commands) Spawn() *EntityCommand {
+func (c *Commands) Spawn(components ...Component) *EntityCommand {
 	ec := NewEntityCommand(c.world.NextEntity())
+	for _, c := range components {
+		ec.Insert(c)
+	}
 	c.queue.Push(ec)
 	return ec
+}
+
+func (c *Commands) InvokeResource(cb ResourceInvoker) *ResourceCommand {
+	cmd := NewResourceCommand(cb)
+	c.queue.Push(cmd)
+	return cmd
 }
