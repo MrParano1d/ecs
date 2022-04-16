@@ -127,8 +127,8 @@ type UpdateStage struct {
 
 func NewUpdateStage() *UpdateStage {
 	return &UpdateStage{
-		startUpSystems: []StartUpSystem{},
-		systems:        []System{},
+		startUpSystems: []StartUpSystem{TimerStartUp()},
+		systems:        []System{TimerSystem()},
 	}
 }
 
