@@ -113,11 +113,17 @@ const (
 	StageUpdate = "update"
 )
 
+const (
+	ThreadingParallel = true
+	ThreadingSingle   = false
+)
+
 type Stage interface {
 	AddStartUpSystem(fn ...StartUpSystem)
 	AddSystem(system ...System)
 	StartUpSystems() []StartUpSystem
 	Systems() []System
+	Threading() bool
 }
 
 type DefaultStage struct {
@@ -146,6 +152,10 @@ func (s *DefaultStage) StartUpSystems() []StartUpSystem {
 
 func (s *DefaultStage) Systems() []System {
 	return s.systems
+}
+
+func (s *DefaultStage) Threading() bool {
+	return ThreadingSingle
 }
 
 type UpdateStage struct {

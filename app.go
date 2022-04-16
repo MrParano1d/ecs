@@ -98,11 +98,8 @@ func (a *App) Run() error {
 
 	for a.running {
 		for _, stage := range a.stages.GetOrderedStages() {
-			queue := NewQueue()
-			for _, system := range stage.Systems() {
-				system(NewSystemContext(a.world, NewCommands(queue, a.world), a.Events()))
-			}
-			queue.Apply(a.world)
+			scheduler := NewScheduler(stage)
+			scheduler.RunSystems(a.world, a.events)
 		}
 
 		reader := NewEventReader(a.Events()[AppExitEvent{}])
