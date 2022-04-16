@@ -5,16 +5,13 @@ type World struct {
 	nextEntity Entity
 
 	resources ResourceMap
-
-	shouldCancel bool
 }
 
 func NewWorld() *World {
 	return &World{
-		entities:     EntityMap{},
-		nextEntity:   1,
-		resources:    ResourceMap{},
-		shouldCancel: false,
+		entities:   EntityMap{},
+		nextEntity: 1,
+		resources:  ResourceMap{},
 	}
 }
 
@@ -31,12 +28,4 @@ func (w *World) NextEntity() Entity {
 
 func (w *World) Resources() ResourceMap {
 	return w.resources
-}
-
-func (w *World) ShouldCancel() bool {
-	return w.shouldCancel
-}
-
-func (w *World) Cancel() {
-	w.shouldCancel = true
 }

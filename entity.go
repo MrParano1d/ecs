@@ -18,6 +18,13 @@ func (em EntityMap) AddComponents(entity Entity, components ...Component) {
 	}
 }
 
+func (em EntityMap) RemoveComponents(entity Entity, components ...Component) {
+	em.assertEntity(entity)
+	for _, c := range components {
+		delete(em[entity], c.Type())
+	}
+}
+
 func (em EntityMap) Components(entity Entity) map[ComponentType]Component {
 	em.assertEntity(entity)
 	return em[entity]

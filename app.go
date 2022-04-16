@@ -13,12 +13,18 @@ type App struct {
 func NewApp() *App {
 	stages := NewStages()
 	stages.Add(StageUpdate, NewUpdateStage())
-	return &App{
+	a := &App{
 		world:   NewWorld(),
 		running: true,
 		stages:  stages,
 		events:  EventMap{},
 	}
+
+	a.AddEvent(func(eventMap EventMap) {
+		AddEvent[AppExitEvent](eventMap)
+	})
+
+	return a
 }
 
 func (a *App) AddStage(stageName string, stage Stage) *App {
@@ -61,8 +67,9 @@ func (a *App) AddPlugin(plugin ...Plugin) *App {
 	return a
 }
 
-func (a *App) AddEvent(cb EventInvoker) {
+func (a *App) AddEvent(cb EventInvoker) *App {
 	cb(a.events)
+	return a
 }
 
 func (a *App) Events() EventMap {
@@ -96,10 +103,11 @@ func (a *App) Run() error {
 				system(NewSystemContext(a.world, NewCommands(queue, a.world), a.Events()))
 			}
 			queue.Apply(a.world)
+		}
 
-			if a.world.ShouldCancel() {
-				a.Cancel()
-			}
+		reader := NewEventReader(a.Events()[AppExitEvent{}])
+		if reader.Next() {
+			a.Cancel()
 		}
 
 		a.FlushEvents()

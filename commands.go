@@ -25,14 +25,14 @@ func (c *Commands) Spawn(components ...Component) *EntityCommand {
 	return ec
 }
 
-func (c *Commands) InvokeResource(cb ResourceInvoker) *ResourceCommand {
-	cmd := NewResourceCommand(cb)
-	c.queue.Push(cmd)
-	return cmd
+func (c *Commands) Entity(entity Entity) *EntityCommand {
+	ec := NewEntityCommand(entity)
+	c.queue.Push(ec)
+	return ec
 }
 
-func (c *Commands) Cancel() *CancelCommand {
-	cmd := NewCancelCommand(true)
+func (c *Commands) InvokeResource(cb ResourceInvoker) *ResourceCommand {
+	cmd := NewResourceCommand(cb)
 	c.queue.Push(cmd)
 	return cmd
 }
