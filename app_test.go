@@ -21,7 +21,7 @@ func TestNewApp(t *testing.T) {
 	app.AddSystem(func(ctx *ecs.SystemContext) {
 		q := ecs.NewQuery[*NameComponent](ctx.World)
 		assert.Equal(t, 0, len(q.Find(ecs.NewFilter(ecs.WithComponentFilter(&PositionComponent{})))))
-		app.Cancel()
+		ctx.Commands.Cancel()
 	})
 	if err := app.Run(); err != nil {
 		t.Fatalf("failed to start app: %v", err)
@@ -43,7 +43,7 @@ func (p *HelloPlugin) Build(app *ecs.App) {
 		for _, c := range q.Find(nil) {
 			assert.Equal(p.T, "hello, world", fmt.Sprintf("hello, %s", c.Name))
 		}
-		app.Cancel()
+		ctx.Commands.Cancel()
 	})
 }
 
@@ -87,7 +87,7 @@ func TestApp_AddEvent(t *testing.T) {
 			i++
 		}
 		assert.Equal(t, 2, i)
-		app.Cancel()
+		ctx.Commands.Cancel()
 	})
 
 	if err := app.Run(); err != nil {
@@ -118,7 +118,7 @@ func TestApp_AddSystemToStage(t *testing.T) {
 		updateCalls++
 	}).AddSystemToStage("render", func(ctx *ecs.SystemContext) {
 		renderCalls++
-		app.Cancel()
+		ctx.Commands.Cancel()
 	})
 
 	if err := app.Run(); err != nil {

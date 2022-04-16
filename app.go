@@ -96,6 +96,10 @@ func (a *App) Run() error {
 				system(NewSystemContext(a.world, NewCommands(queue, a.world), a.Events()))
 			}
 			queue.Apply(a.world)
+
+			if a.world.ShouldCancel() {
+				a.Cancel()
+			}
 		}
 
 		a.FlushEvents()

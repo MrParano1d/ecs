@@ -30,3 +30,9 @@ func (c *Commands) InvokeResource(cb ResourceInvoker) *ResourceCommand {
 	c.queue.Push(cmd)
 	return cmd
 }
+
+func (c *Commands) Cancel() *CancelCommand {
+	cmd := NewCancelCommand(true)
+	c.queue.Push(cmd)
+	return cmd
+}

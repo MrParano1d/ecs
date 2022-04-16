@@ -26,7 +26,7 @@ func TestNewTime(t *testing.T) {
 	})
 	app.AddSystem(func(ctx *ecs.SystemContext) {
 		if loops == 2 {
-			app.Cancel()
+			ctx.Commands.Cancel()
 		}
 		loops++
 	})
