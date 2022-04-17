@@ -19,7 +19,9 @@ func (s *Scheduler) RunSystems(world *World, events EventMap) {
 		queue := NewQueue()
 		for _, system := range s.stage.Systems() {
 			go func(system System) {
-				system(NewSystemContext(world, NewCommands(queue, world), events))
+				ctx := NewSystemContext(world, NewCommands(queue, world), events)
+				system(ctx)
+				ctx = nil
 				s.wg.Done()
 			}(system)
 		}
@@ -29,7 +31,9 @@ func (s *Scheduler) RunSystems(world *World, events EventMap) {
 	} else {
 		queue := NewQueue()
 		for _, system := range s.stage.Systems() {
-			system(NewSystemContext(world, NewCommands(queue, world), events))
+			ctx := NewSystemContext(world, NewCommands(queue, world), events)
+			system(ctx)
+			ctx = nil
 		}
 		queue.Apply(world)
 		queue = nil
