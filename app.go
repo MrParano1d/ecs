@@ -27,18 +27,18 @@ func NewApp() *App {
 	return a
 }
 
-func (a *App) AddStage(stageName string, stage Stage) *App {
-	a.stages.Add(stageName, stage)
+func (a *App) AddStage(stage Stage) *App {
+	a.stages.Add(stage.Name(), stage)
 	return a
 }
 
-func (a *App) AddStageBefore(beforeStageName string, stageName string, stage Stage) *App {
-	a.stages.AddBefore(beforeStageName, stageName, stage)
+func (a *App) AddStageBefore(beforeStageName string, stage Stage) *App {
+	a.stages.AddBefore(beforeStageName, stage.Name(), stage)
 	return a
 }
 
-func (a *App) AddStageAfter(afterStageName string, stageName string, stage Stage) *App {
-	a.stages.AddAfter(afterStageName, stageName, stage)
+func (a *App) AddStageAfter(afterStageName string, stage Stage) *App {
+	a.stages.AddAfter(afterStageName, stage.Name(), stage)
 	return a
 }
 
@@ -94,6 +94,11 @@ func (a *App) Run() error {
 			fn(NewCommands(queue, a.world))
 		}
 		queue.Apply(a.world)
+
+		reader := NewEventReader(a.Events()[AppExitEvent{}])
+		if reader.Next() {
+			a.Cancel()
+		}
 	}
 
 	for a.running {

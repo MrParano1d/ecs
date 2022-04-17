@@ -119,6 +119,7 @@ const (
 )
 
 type Stage interface {
+	Name() string
 	AddStartUpSystem(fn ...StartUpSystem)
 	AddSystem(system ...System)
 	StartUpSystems() []StartUpSystem
@@ -158,6 +159,10 @@ func (s *DefaultStage) Threading() bool {
 	return ThreadingSingle
 }
 
+func (s *DefaultStage) Name() string {
+	panic("implement me")
+}
+
 type UpdateStage struct {
 	Stage
 }
@@ -171,4 +176,8 @@ func NewUpdateStage() *UpdateStage {
 	s.AddSystem(TimerSystem())
 
 	return s
+}
+
+func (s *UpdateStage) Name() string {
+	return StageUpdate
 }

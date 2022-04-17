@@ -107,6 +107,10 @@ func NewAppRenderStage() *AppRenderStage {
 	}
 }
 
+func (s AppRenderStage) Name() string {
+	return "render"
+}
+
 func TestApp_AddSystemToStage(t *testing.T) {
 
 	updateCalls := 0
@@ -114,7 +118,7 @@ func TestApp_AddSystemToStage(t *testing.T) {
 
 	app := ecs.NewApp()
 	app.AddStageAfter(
-		ecs.StageUpdate, "render", NewAppRenderStage(),
+		ecs.StageUpdate, NewAppRenderStage(),
 	).AddSystem(func(ctx *ecs.SystemContext) {
 		updateCalls++
 	}).AddSystemToStage("render", func(ctx *ecs.SystemContext) {

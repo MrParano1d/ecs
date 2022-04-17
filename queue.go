@@ -18,4 +18,5 @@ func (q *Queue) Apply(w *World) {
 	for _, c := range q.commands {
 		c.Write(w)
 	}
+	q.commands = nil
 }
