@@ -24,6 +24,7 @@ func (s *Scheduler) RunSystems(world *World, events EventMap) {
 			}(system)
 		}
 		queue.Apply(world)
+		queue = nil
 		s.wg.Wait()
 	} else {
 		queue := NewQueue()
@@ -31,6 +32,7 @@ func (s *Scheduler) RunSystems(world *World, events EventMap) {
 			system(NewSystemContext(world, NewCommands(queue, world), events))
 		}
 		queue.Apply(world)
+		queue = nil
 	}
 
 }
