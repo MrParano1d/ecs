@@ -48,8 +48,8 @@ type EventReader struct {
 	index  int
 }
 
-func NewEventReader(writer *EventWriter) *EventReader {
-	return &EventReader{
+func NewEventReader(writer *EventWriter) EventReader {
+	return EventReader{
 		mutex:  &sync.Mutex{},
 		writer: writer,
 		index:  0,

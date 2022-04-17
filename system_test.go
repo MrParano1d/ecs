@@ -17,7 +17,7 @@ func TestNewSystemContext(t *testing.T) {
 
 	ecs.AddEvent[ContextTestEvent](ev)
 
-	ctx := ecs.NewSystemContext(w, ecs.NewCommands(q, w), ev)
+	ctx := ecs.NewSystemContext(w, ecs.NewCommands(&q, w), ev)
 	writer := ctx.EventWriter(ContextTestEvent{})
 	writer.Send(ContextTestEvent{Data: "test"})
 

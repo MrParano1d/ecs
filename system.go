@@ -24,7 +24,7 @@ func (c *SystemContext) EventWriter(event Event) *EventWriter {
 	return c.events[event]
 }
 
-func (c *SystemContext) EventReader(event Event) *EventReader {
+func (c *SystemContext) EventReader(event Event) EventReader {
 	return NewEventReader(c.events[event])
 }
 

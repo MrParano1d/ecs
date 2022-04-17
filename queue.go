@@ -4,8 +4,8 @@ type Queue struct {
 	commands []Command
 }
 
-func NewQueue() *Queue {
-	return &Queue{
+func NewQueue() Queue {
+	return Queue{
 		commands: []Command{},
 	}
 }

@@ -91,7 +91,7 @@ func (a *App) Run() error {
 	for _, stage := range a.stages.GetOrderedStages() {
 		queue := NewQueue()
 		for _, fn := range stage.StartUpSystems() {
-			fn(NewCommands(queue, a.world))
+			fn(NewCommands(&queue, a.world))
 		}
 		queue.Apply(a.world)
 
