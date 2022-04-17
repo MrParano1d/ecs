@@ -18,13 +18,13 @@ func TestTime_Delta(t *testing.T) {
 func TestNewTime(t *testing.T) {
 	loops := 0
 	app := ecs.NewApp()
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		time.Sleep(1 * time.Microsecond)
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		assert.Greater(t, ctx.Time().Delta(), float64(0))
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		if loops == 2 {
 			ctx.EventWriter(ecs.AppExitEvent{}).Send(ecs.AppExitEvent{})
 		}

@@ -12,13 +12,13 @@ func TestNewApp(t *testing.T) {
 	app.AddStartUpSystem(func(commands *ecs.Commands) {
 		commands.Spawn().Insert(&NameComponent{Name: "test"})
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		q := ecs.NewQuery[*NameComponent](ctx.World)
 		for _, c := range q.Find(nil) {
 			assert.Equal(t, "test", c.Name)
 		}
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		q := ecs.NewQuery[*NameComponent](ctx.World)
 		assert.Equal(t, 0, len(q.Find(ecs.NewFilter(ecs.WithComponentFilter(&PositionComponent{})))))
 		ctx.EventWriter(ecs.AppExitEvent{}).Send(ecs.AppExitEvent{})
@@ -38,7 +38,7 @@ func (p *HelloPlugin) Build(app *ecs.App) {
 	app.AddStartUpSystem(func(commands *ecs.Commands) {
 		commands.Spawn().Insert(&NameComponent{Name: "world"})
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		q := ecs.NewQuery[*NameComponent](ctx.World)
 		for _, c := range q.Find(nil) {
 			assert.Equal(p.T, "hello, world", fmt.Sprintf("hello, %s", c.Name))
@@ -64,13 +64,13 @@ func TestApp_AddEvent(t *testing.T) {
 	app.AddEvent(func(eventMap ecs.EventMap) {
 		ecs.AddEvent[TestEvent](eventMap)
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		ctx.EventWriter(TestEvent{}).Send(TestEvent{Data: "test0"})
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		ctx.EventWriter(TestEvent{}).Send(TestEvent{Data: "test1"})
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		i := 0
 		reader := ctx.EventReader(TestEvent{})
 		for reader.Next() {
@@ -79,7 +79,7 @@ func TestApp_AddEvent(t *testing.T) {
 		}
 		assert.Equal(t, 2, i)
 	})
-	app.AddSystem(func(ctx *ecs.SystemContext) {
+	app.AddSystem(func(ctx ecs.SystemContext) {
 		i := 0
 		reader := ctx.EventReader(TestEvent{})
 		for reader.Next() {
@@ -119,9 +119,9 @@ func TestApp_AddSystemToStage(t *testing.T) {
 	app := ecs.NewApp()
 	app.AddStageAfter(
 		ecs.StageUpdate, NewAppRenderStage(),
-	).AddSystem(func(ctx *ecs.SystemContext) {
+	).AddSystem(func(ctx ecs.SystemContext) {
 		updateCalls++
-	}).AddSystemToStage("render", func(ctx *ecs.SystemContext) {
+	}).AddSystemToStage("render", func(ctx ecs.SystemContext) {
 		renderCalls++
 		ctx.EventWriter(ecs.AppExitEvent{}).Send(ecs.AppExitEvent{})
 	})

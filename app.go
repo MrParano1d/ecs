@@ -105,7 +105,6 @@ func (a *App) Run() error {
 		for _, stage := range a.stages.GetOrderedStages() {
 			scheduler := NewScheduler(stage)
 			scheduler.RunSystems(a.world, a.events)
-			scheduler = nil
 		}
 
 		reader := NewEventReader(a.Events()[AppExitEvent{}])

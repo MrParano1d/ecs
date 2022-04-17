@@ -7,8 +7,8 @@ type Scheduler struct {
 	wg    sync.WaitGroup
 }
 
-func NewScheduler(stage Stage) *Scheduler {
-	return &Scheduler{
+func NewScheduler(stage Stage) Scheduler {
+	return Scheduler{
 		stage: stage,
 	}
 }
@@ -21,7 +21,6 @@ func (s *Scheduler) RunSystems(world *World, events EventMap) {
 			go func(system System) {
 				ctx := NewSystemContext(world, NewCommands(queue, world), events)
 				system(ctx)
-				ctx = nil
 				s.wg.Done()
 			}(system)
 		}
@@ -33,7 +32,6 @@ func (s *Scheduler) RunSystems(world *World, events EventMap) {
 		for _, system := range s.stage.Systems() {
 			ctx := NewSystemContext(world, NewCommands(queue, world), events)
 			system(ctx)
-			ctx = nil
 		}
 		queue.Apply(world)
 		queue = nil
