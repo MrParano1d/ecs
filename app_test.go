@@ -9,7 +9,7 @@ import (
 
 func TestNewApp(t *testing.T) {
 	app := ecs.NewApp()
-	app.AddStartUpSystem(func(commands *ecs.Commands) {
+	app.AddStartUpSystem(func(commands ecs.Commands) {
 		commands.Spawn().Insert(&NameComponent{Name: "test"})
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
@@ -35,7 +35,7 @@ type HelloPlugin struct {
 var _ ecs.Plugin = &HelloPlugin{}
 
 func (p *HelloPlugin) Build(app *ecs.App) {
-	app.AddStartUpSystem(func(commands *ecs.Commands) {
+	app.AddStartUpSystem(func(commands ecs.Commands) {
 		commands.Spawn().Insert(&NameComponent{Name: "world"})
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {

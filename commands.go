@@ -9,8 +9,8 @@ type Commands struct {
 	world *World
 }
 
-func NewCommands(queue *Queue, world *World) *Commands {
-	return &Commands{
+func NewCommands(queue *Queue, world *World) Commands {
+	return Commands{
 		queue: queue,
 		world: world,
 	}
