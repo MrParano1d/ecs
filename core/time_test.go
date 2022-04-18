@@ -21,7 +21,7 @@ func TestNewTime(t *testing.T) {
 	app := ecs.NewApp()
 	app.AddPlugin(core.NewPlugin(core.EnvDebug))
 	app.AddSystem(func(ctx ecs.SystemContext) {
-		time.Sleep(1 * time.Microsecond)
+		time.Sleep(1 * time.Millisecond)
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
 		gameTime := ecs.GetResource[*core.Time](ctx.Resources)

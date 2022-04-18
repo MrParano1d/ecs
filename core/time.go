@@ -27,7 +27,11 @@ func (t *Time) SecondsSinceStart() float64 {
 }
 
 func (t *Time) Delta() float64 {
-	return time.Now().Sub(t.lastFrame).Seconds()
+	delta := time.Now().Sub(t.lastFrame).Seconds()
+	if delta == 0 {
+		delta = 0.00001
+	}
+	return delta
 }
 
 func (t *Time) Update() {
