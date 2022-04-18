@@ -21,9 +21,6 @@ func NewFirstStage(environment string) *FirstStage {
 		Stage: ecs.NewDefaultStage(),
 	}
 
-	s.AddStartUpSystem(TimerStartUp())
-	s.AddSystem(TimerSystem())
-
 	s.AddStartUpSystem(func(commands ecs.Commands) {
 		commands.InvokeResource(func(resourceMap ecs.ResourceMap) {
 			if environment == EnvDebug {
