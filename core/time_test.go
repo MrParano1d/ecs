@@ -1,14 +1,15 @@
-package ecs_test
+package core_test
 
 import (
 	"github.com/mrparano1d/ecs"
+	"github.com/mrparano1d/ecs/core"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func TestTime_Delta(t *testing.T) {
-	gameTime := ecs.NewTime()
+	gameTime := core.NewTime()
 
 	time.Sleep(1 * time.Microsecond)
 
@@ -18,11 +19,13 @@ func TestTime_Delta(t *testing.T) {
 func TestNewTime(t *testing.T) {
 	loops := 0
 	app := ecs.NewApp()
+	app.AddPlugin(core.NewPlugin(core.EnvDebug))
 	app.AddSystem(func(ctx ecs.SystemContext) {
 		time.Sleep(1 * time.Microsecond)
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
-		assert.Greater(t, ctx.Time().Delta(), float64(0))
+		gameTime := ecs.GetResource[*core.Time](ctx.Resources)
+		assert.Greater(t, gameTime.Delta(), float64(0))
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
 		if loops == 2 {

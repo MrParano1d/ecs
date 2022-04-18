@@ -27,7 +27,3 @@ func (c *SystemContext) EventWriter(event Event) *EventWriter {
 func (c *SystemContext) EventReader(event Event) EventReader {
 	return NewEventReader(c.events[event])
 }
-
-func (c *SystemContext) Time() *Time {
-	return GetResource[*Time](c.Resources)
-}

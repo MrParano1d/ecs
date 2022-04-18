@@ -9,6 +9,7 @@ import (
 
 func TestNewApp(t *testing.T) {
 	app := ecs.NewApp()
+	app.AddPlugin(NewTestPlugin())
 	app.AddStartUpSystem(func(commands ecs.Commands) {
 		commands.Spawn().Insert(&NameComponent{Name: "test"})
 	})
@@ -49,6 +50,7 @@ func (p *HelloPlugin) Build(app *ecs.App) {
 
 func TestApp_AddPlugin(t *testing.T) {
 	app := ecs.NewApp()
+	app.AddPlugin(NewTestPlugin())
 	app.AddPlugin(&HelloPlugin{T: t})
 	if err := app.Run(); err != nil {
 		t.Fatalf("failed to start app: %v", err)
@@ -61,6 +63,7 @@ type TestEvent struct {
 
 func TestApp_AddEvent(t *testing.T) {
 	app := ecs.NewApp()
+	app.AddPlugin(NewTestPlugin())
 	app.AddEvent(func(eventMap ecs.EventMap) {
 		ecs.AddEvent[TestEvent](eventMap)
 	})
@@ -117,6 +120,7 @@ func TestApp_AddSystemToStage(t *testing.T) {
 	renderCalls := 0
 
 	app := ecs.NewApp()
+	app.AddPlugin(NewTestPlugin())
 	app.AddStageAfter(
 		ecs.StageUpdate, NewAppRenderStage(),
 	).AddSystem(func(ctx ecs.SystemContext) {

@@ -55,10 +55,6 @@ func TestStageOrder_InsertBefore(t *testing.T) {
 	assert.Equal(t, ecs.StageOrder{"update"}, duplicateStageOrder)
 }
 
-type UpdateStage struct {
-	ecs.Stage
-}
-
 type RenderStage struct {
 	ecs.Stage
 }

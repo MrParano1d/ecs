@@ -12,7 +12,6 @@ type App struct {
 
 func NewApp() *App {
 	stages := NewStages()
-	stages.Add(StageUpdate, NewUpdateStage())
 	a := &App{
 		world:   NewWorld(),
 		running: true,

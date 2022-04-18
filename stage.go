@@ -162,22 +162,3 @@ func (s *DefaultStage) Threading() bool {
 func (s *DefaultStage) Name() string {
 	panic("implement me")
 }
-
-type UpdateStage struct {
-	Stage
-}
-
-func NewUpdateStage() *UpdateStage {
-	s := &UpdateStage{
-		Stage: NewDefaultStage(),
-	}
-
-	s.AddStartUpSystem(TimerStartUp())
-	s.AddSystem(TimerSystem())
-
-	return s
-}
-
-func (s *UpdateStage) Name() string {
-	return StageUpdate
-}
