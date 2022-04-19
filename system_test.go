@@ -11,7 +11,7 @@ type ContextTestEvent struct {
 }
 
 func TestNewSystemContext(t *testing.T) {
-	w := ecs.NewWorld()
+	w := ecs.NewWorld(ecs.EventMap{})
 	q := ecs.NewQueue()
 	ev := ecs.EventMap{}
 

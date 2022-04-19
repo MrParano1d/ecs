@@ -11,12 +11,14 @@ type App struct {
 }
 
 func NewApp() *App {
+	events := EventMap{}
+
 	stages := NewStages()
 	a := &App{
-		world:   NewWorld(),
+		world:   NewWorld(events),
 		running: true,
 		stages:  stages,
-		events:  EventMap{},
+		events:  events,
 	}
 
 	a.AddEvent(func(eventMap EventMap) {

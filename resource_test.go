@@ -42,7 +42,7 @@ func TestRemoveResource(t *testing.T) {
 }
 
 func TestInitResource(t *testing.T) {
-	world := ecs.NewWorld()
+	world := ecs.NewWorld(ecs.EventMap{})
 
 	rm := ecs.ResourceMap{}
 	if err := ecs.InitResource[*WorldResource](rm, world); err != nil {

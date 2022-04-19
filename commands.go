@@ -36,3 +36,9 @@ func (c *Commands) InvokeResource(cb ResourceInvoker) *ResourceCommand {
 	c.queue.Push(cmd)
 	return cmd
 }
+
+func (c *Commands) Events(cb EventInvoker) *EventsCommand {
+	cmd := NewEventsCommand(cb)
+	c.queue.Push(cmd)
+	return cmd
+}

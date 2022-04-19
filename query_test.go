@@ -28,7 +28,7 @@ func (pc *PositionComponent) Type() ecs.ComponentType {
 }
 
 func TestNewQuery(t *testing.T) {
-	world := ecs.NewWorld()
+	world := ecs.NewWorld(ecs.EventMap{})
 	world.Entities().AddComponents(world.NextEntity(), &NameComponent{Name: "test"})
 	query := ecs.NewQuery[*NameComponent](world)
 	assert.Equal(t, 1, len(query.Find(ecs.NewFilter())))
@@ -40,7 +40,7 @@ func TestNewQuery(t *testing.T) {
 }
 
 func BenchmarkQuery_Find(b *testing.B) {
-	world := ecs.NewWorld()
+	world := ecs.NewWorld(ecs.EventMap{})
 	world.Entities().AddComponents(world.NextEntity(), &NameComponent{Name: "test"})
 	for n := 0; n < b.N; n++ {
 		query := ecs.NewQuery[*NameComponent](world)

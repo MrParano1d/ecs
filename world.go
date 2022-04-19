@@ -5,13 +5,15 @@ type World struct {
 	nextEntity Entity
 
 	resources ResourceMap
+	events    EventMap
 }
 
-func NewWorld() *World {
+func NewWorld(events EventMap) *World {
 	return &World{
 		entities:   EntityMap{},
 		nextEntity: 1,
 		resources:  ResourceMap{},
+		events:     events,
 	}
 }
 
@@ -28,4 +30,8 @@ func (w *World) NextEntity() Entity {
 
 func (w *World) Resources() ResourceMap {
 	return w.resources
+}
+
+func (w *World) Events() EventMap {
+	return w.events
 }
