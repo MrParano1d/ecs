@@ -42,3 +42,12 @@ func (c *Commands) Events(cb EventInvoker) *EventsCommand {
 	c.queue.Push(cmd)
 	return cmd
 }
+
+func (c *Commands) Add(commands ...Command) *Commands {
+
+	for _, cmd := range commands {
+		c.queue.Push(cmd)
+	}
+
+	return c
+}
