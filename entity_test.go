@@ -55,7 +55,7 @@ func TestEntityMap_ComponentsByType(t *testing.T) {
 	em := ecs.EntityMap{}
 	em.AddComponents(1, &TestComponent{a: 0}, &TestComponent2{b: 0})
 
-	assert.Equal(t, 1, len(em.ComponentsByType(&TestComponent{})))
-	assert.Equal(t, 1, len(em.ComponentsByType(&TestComponent{}, &TestComponent2{})))
-	assert.Equal(t, 0, len(em.ComponentsByType(&TestComponent{}, &TestComponent2{}, &TestComponent3{})))
+	assert.Equal(t, 1, len(em.EntitiesByComponentTypes(&TestComponent{})))
+	assert.Equal(t, 1, len(em.EntitiesByComponentTypes(&TestComponent{}, &TestComponent2{})))
+	assert.Equal(t, 0, len(em.EntitiesByComponentTypes(&TestComponent{}, &TestComponent2{}, &TestComponent3{})))
 }

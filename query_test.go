@@ -30,20 +30,20 @@ func (pc *PositionComponent) Type() ecs.ComponentType {
 func TestNewQuery(t *testing.T) {
 	world := ecs.NewWorld(ecs.EventMap{})
 	world.Entities().AddComponents(world.NextEntity(), &NameComponent{Name: "test"})
-	query := ecs.NewQuery[*NameComponent](world)
-	assert.Equal(t, 1, len(query.Find(ecs.NewFilter())))
+	query := ecs.NewQuery(world)
+	assert.Equal(t, 1, len(query.Find(ecs.NewFilter(ecs.WithComponentFilter(&NameComponent{})))))
 	assert.Equal(t, 0, len(query.Find(ecs.NewFilter(ecs.WithComponentFilter(&PositionComponent{})))))
 
 	world.Entities().AddComponents(world.NextEntity(), &NameComponent{Name: "test"}, &PositionComponent{0, 0, 0})
-	query = ecs.NewQuery[*NameComponent](world)
-	assert.Equal(t, 1, len(query.Find(ecs.NewFilter(ecs.WithComponentFilter(&PositionComponent{})))))
+	query = ecs.NewQuery(world)
+	assert.Equal(t, 1, len(query.Find(ecs.NewFilter(ecs.WithComponentFilter(&NameComponent{}, &PositionComponent{})))))
 }
 
 func BenchmarkQuery_Find(b *testing.B) {
 	world := ecs.NewWorld(ecs.EventMap{})
 	world.Entities().AddComponents(world.NextEntity(), &NameComponent{Name: "test"})
 	for n := 0; n < b.N; n++ {
-		query := ecs.NewQuery[*NameComponent](world)
-		query.Find(ecs.NewFilter(ecs.WithComponentFilter(&PositionComponent{})))
+		query := ecs.NewQuery(world)
+		query.Find(ecs.NewFilter(ecs.WithComponentFilter(&NameComponent{}, &PositionComponent{})))
 	}
 }

@@ -14,14 +14,14 @@ func TestNewApp(t *testing.T) {
 		commands.Spawn().Insert(&NameComponent{Name: "test"})
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
-		q := ecs.NewQuery[*NameComponent](ctx.World)
-		for _, c := range q.Find(nil) {
-			assert.Equal(t, "test", c.Name)
+		q := ecs.NewQuery(ctx.World)
+		for _, e := range q.Find(ecs.NewFilter(ecs.WithComponentFilter(&NameComponent{}))) {
+			assert.Equal(t, "test", ecs.GetComponent[*NameComponent](ctx.World.Entities(), e).Name)
 		}
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
-		q := ecs.NewQuery[*NameComponent](ctx.World)
-		assert.Equal(t, 0, len(q.Find(ecs.NewFilter(ecs.WithComponentFilter(&PositionComponent{})))))
+		q := ecs.NewQuery(ctx.World)
+		assert.Equal(t, 0, len(q.Find(ecs.NewFilter(ecs.WithComponentFilter(&NameComponent{}, &PositionComponent{})))))
 		ctx.EventWriter(ecs.AppExitEvent{}).Send(ecs.AppExitEvent{})
 	})
 	if err := app.Run(); err != nil {
@@ -40,9 +40,9 @@ func (p *HelloPlugin) Build(app *ecs.App) {
 		commands.Spawn().Insert(&NameComponent{Name: "world"})
 	})
 	app.AddSystem(func(ctx ecs.SystemContext) {
-		q := ecs.NewQuery[*NameComponent](ctx.World)
-		for _, c := range q.Find(nil) {
-			assert.Equal(p.T, "hello, world", fmt.Sprintf("hello, %s", c.Name))
+		q := ecs.NewQuery(ctx.World)
+		for _, e := range q.Find(ecs.NewFilter(ecs.WithComponentFilter(&NameComponent{}))) {
+			assert.Equal(p.T, "hello, world", fmt.Sprintf("hello, %s", ecs.GetComponent[*NameComponent](ctx.World.Entities(), e).Name))
 		}
 		ctx.EventWriter(ecs.AppExitEvent{}).Send(ecs.AppExitEvent{})
 	})

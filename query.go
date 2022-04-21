@@ -1,11 +1,11 @@
 package ecs
 
-type Query[C Component] struct {
+type Query struct {
 	world *World
 }
 
-func NewQuery[C Component](w *World) *Query[C] {
-	return &Query[C]{
+func NewQuery(w *World) *Query {
+	return &Query{
 		world: w,
 	}
 }
@@ -28,23 +28,22 @@ func NewFilter(opts ...FilterOption) *Filter {
 	return f
 }
 
-func WithComponentFilter(component Component) FilterOption {
+func WithComponentFilter(components ...Component) FilterOption {
 	return func(f *Filter) {
-		f.with = append(f.with, component)
+		f.with = append(f.with, components...)
 	}
 }
 
-func (q *Query[C]) Find(filter *Filter) []C {
-	var comp C
-	var cs []C
+func (q *Query) Find(filter *Filter) []Entity {
+	var entities []Entity
 
 	if filter == nil {
 		filter = NewFilter()
 	}
 
-	for _, c := range q.world.Entities().ComponentsByType(comp, filter.with...) {
-		cs = append(cs, c.(C))
+	for _, e := range q.world.Entities().EntitiesByComponentTypes(filter.with...) {
+		entities = append(entities, e)
 	}
 
-	return cs
+	return entities
 }

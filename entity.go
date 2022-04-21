@@ -30,26 +30,31 @@ func (em EntityMap) Components(entity Entity) map[ComponentType]Component {
 	return em[entity]
 }
 
-func (em EntityMap) ComponentsByType(ct Component, withTypes ...Component) []Component {
-	var components []Component
-	withTypesLen := len(withTypes)
-	for _, e := range em {
-		if c, ok := e[ct.Type()]; !ok {
-			continue
-		} else {
-			hasWithTypes := withTypesLen == 0
-			for _, wt := range withTypes {
-				if _, ok := e[wt.Type()]; !ok {
-					hasWithTypes = false
-					break
-				} else {
-					hasWithTypes = true
-				}
-			}
-			if hasWithTypes {
-				components = append(components, c)
+func (em EntityMap) EntitiesByComponentTypes(components ...Component) []Entity {
+	var entities []Entity
+	for e, c := range em {
+		hasWithTypes := false
+		for _, wt := range components {
+			if _, ok := c[wt.Type()]; !ok {
+				hasWithTypes = false
+				break
+			} else {
+				hasWithTypes = true
 			}
 		}
+		if hasWithTypes {
+			entities = append(entities, e)
+		}
 	}
-	return components
+	return entities
+}
+
+func GetComponent[C Component](entities EntityMap, entity Entity) C {
+	var component C
+
+	if c, ok := entities[entity].Get(component.Type()); ok {
+		return c.(C)
+	}
+
+	return component
 }
