@@ -30,6 +30,10 @@ func NewApp() *App {
 	return a
 }
 
+func (a *App) Stages() *Stages {
+	return a.stages
+}
+
 func (a *App) AddStage(stage Stage) *App {
 	a.stages.Add(stage.Name(), stage)
 	return a
