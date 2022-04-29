@@ -35,17 +35,17 @@ func (a *App) Stages() *Stages {
 }
 
 func (a *App) AddStage(stage Stage) *App {
-	a.stages.Add(stage.Name(), stage)
+	a.stages.Add(stage)
 	return a
 }
 
 func (a *App) AddStageBefore(beforeStageName string, stage Stage) *App {
-	a.stages.AddBefore(beforeStageName, stage.Name(), stage)
+	a.stages.AddBefore(beforeStageName, stage)
 	return a
 }
 
 func (a *App) AddStageAfter(afterStageName string, stage Stage) *App {
-	a.stages.AddAfter(afterStageName, stage.Name(), stage)
+	a.stages.AddAfter(afterStageName, stage)
 	return a
 }
 
@@ -93,8 +93,8 @@ func (a *App) FlushEvents() {
 	}
 }
 
-func (a *App) SetupSystems() {
-	for _, stage := range a.stages.GetOrderedStages() {
+func (a *App) SetupSystems(stageFilters ...StageFilterOption) {
+	for _, stage := range a.stages.GetOrderedStages(stageFilters...) {
 		queue := NewQueue()
 		for _, fn := range stage.StartUpSystems() {
 			fn(NewCommands(&queue, a.world))
@@ -108,8 +108,8 @@ func (a *App) SetupSystems() {
 	}
 }
 
-func (a *App) RunSystems() {
-	for _, stage := range a.stages.GetOrderedStages() {
+func (a *App) RunSystems(stageFilters ...StageFilterOption) {
+	for _, stage := range a.stages.GetOrderedStages(stageFilters...) {
 		scheduler := NewScheduler(stage)
 		scheduler.RunSystems(a.world, a.events)
 	}

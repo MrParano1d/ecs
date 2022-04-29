@@ -74,19 +74,19 @@ func NewStages() *Stages {
 	}
 }
 
-func (s *Stages) Add(stageName string, stage Stage) {
-	s.registry.Set(stageName, stage)
-	s.order.Insert(stageName)
+func (s *Stages) Add(stage Stage) {
+	s.registry.Set(stage.Name(), stage)
+	s.order.Insert(stage.Name())
 }
 
-func (s *Stages) AddAfter(afterStageName string, stageName string, stage Stage) {
-	s.registry.Set(stageName, stage)
-	s.order.InsertAfter(afterStageName, stageName)
+func (s *Stages) AddAfter(afterStageName string, stage Stage) {
+	s.registry.Set(stage.Name(), stage)
+	s.order.InsertAfter(afterStageName, stage.Name())
 }
 
-func (s *Stages) AddBefore(beforeStageName string, stageName string, stage Stage) {
-	s.registry.Set(stageName, stage)
-	s.order.InsertBefore(beforeStageName, stageName)
+func (s *Stages) AddBefore(beforeStageName string, stage Stage) {
+	s.registry.Set(stage.Name(), stage)
+	s.order.InsertBefore(beforeStageName, stage.Name())
 }
 
 func (s *Stages) GetStage(stageName string) Stage {
@@ -96,21 +96,62 @@ func (s *Stages) GetStage(stageName string) Stage {
 	panic(fmt.Errorf("unknown stage: %s", stageName))
 }
 
-func (s *Stages) GetOrderedStages() []Stage {
+func (s *Stages) GetOrderedStages(filters ...StageFilterOption) []Stage {
 	stages := make([]Stage, len(s.order))
+
+	filter := NewStageFilter(filters...)
+
+	filterLabelsLen := len(filter.labels)
 
 	for i, stageName := range s.order {
 		if stage, ok := s.registry.Get(stageName); !ok {
-			panic(fmt.Errorf("mismatched stage order and registry length: registry=%d, order=%d", len(s.registry), len(s.order)))
+			panic(
+				fmt.Errorf(
+					"mismatched stage order and registry length: registry=%d, order=%d", len(s.registry), len(s.order),
+				),
+			)
 		} else {
-			stages[i] = stage
+			if filterLabelsLen > 0 {
+				valids := 0
+				for _, l := range filter.labels {
+					if l == stage.Label() {
+						valids++
+					}
+				}
+				if valids == filterLabelsLen {
+					stages[i] = stage
+				}
+			} else {
+				stages[i] = stage
+			}
 		}
 	}
+
+	// if a filter was applied the stage slice could contain nil elements, so we need to remove them
+	if filter.HasFilters() {
+		for i := 0; i < len(stages); {
+			if stages[i] != nil {
+				i++
+				continue
+			}
+
+			if i < len(stages)-1 {
+				copy(stages[i:], stages[i+1:])
+			}
+
+			stages[len(stages)-1] = nil
+			stages = stages[:len(stages)-1]
+		}
+	}
+
 	return stages
 }
 
 const (
 	StageUpdate = "update"
+	LabelNone   = "none"
+	LabelUpdate = "update"
+	LabelRender = "render"
 )
 
 const (
@@ -125,18 +166,36 @@ type Stage interface {
 	StartUpSystems() []StartUpSystem
 	Systems() []System
 	Threading() bool
+	SetLabel(label string)
+	Label() string
 }
 
 type DefaultStage struct {
 	startUpSystems []StartUpSystem
 	systems        []System
+	label          string
 }
 
-func NewDefaultStage() *DefaultStage {
-	return &DefaultStage{
+type StageOption func(stage Stage)
+
+func WithStageLabel(label string) StageOption {
+	return func(stage Stage) {
+		stage.SetLabel(label)
+	}
+}
+
+func NewDefaultStage(opts ...StageOption) *DefaultStage {
+	d := &DefaultStage{
 		startUpSystems: []StartUpSystem{},
 		systems:        []System{},
+		label:          LabelNone,
 	}
+
+	for _, opt := range opts {
+		opt(d)
+	}
+
+	return d
 }
 
 func (s *DefaultStage) AddStartUpSystem(fn ...StartUpSystem) {
@@ -157,6 +216,14 @@ func (s *DefaultStage) Systems() []System {
 
 func (s *DefaultStage) Threading() bool {
 	return ThreadingSingle
+}
+
+func (s *DefaultStage) SetLabel(label string) {
+	s.label = label
+}
+
+func (s *DefaultStage) Label() string {
+	return s.label
 }
 
 func (s *DefaultStage) Name() string {

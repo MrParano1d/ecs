@@ -59,20 +59,54 @@ type RenderStage struct {
 	ecs.Stage
 }
 
+func (s *RenderStage) Name() string {
+	return "render"
+}
+
 type DebugStage struct {
 	ecs.Stage
+}
+
+func (s *DebugStage) Name() string {
+	return "debug"
 }
 
 func TestNewStages(t *testing.T) {
 	stages := ecs.NewStages()
 
 	renderStage := &RenderStage{}
-	stages.Add("render", renderStage)
+	stages.Add(renderStage)
 	updateStage := &UpdateStage{}
-	stages.AddBefore("render", "update", updateStage)
+	stages.AddBefore("render", updateStage)
 	debugStage := &DebugStage{}
-	stages.AddAfter("render", "debug", debugStage)
+	stages.AddAfter("render", debugStage)
 
 	expectedStageOrder := []ecs.Stage{updateStage, renderStage, debugStage}
 	assert.Equal(t, expectedStageOrder, stages.GetOrderedStages())
+}
+
+type TestLabelStage struct {
+	ecs.Stage
+}
+
+func NewTestLabelStage() *TestLabelStage {
+	return &TestLabelStage{
+		Stage: ecs.NewDefaultStage(ecs.WithStageLabel(ecs.LabelRender)),
+	}
+}
+
+func (s *TestLabelStage) Name() string {
+	return "test"
+}
+
+func TestWithStageLabel(t *testing.T) {
+
+	s := NewTestLabelStage()
+
+	stages := ecs.NewStages()
+	stages.Add(s)
+
+	assert.Equal(t, 1, len(stages.GetOrderedStages()))
+	assert.Equal(t, 1, len(stages.GetOrderedStages(ecs.WithStageLabelFilter(ecs.LabelRender))))
+	assert.Equal(t, 0, len(stages.GetOrderedStages(ecs.WithStageLabelFilter(ecs.LabelUpdate))))
 }
