@@ -21,9 +21,11 @@ func NewApp() *App {
 		events:  events,
 	}
 
-	a.AddEvent(func(eventMap EventMap) {
-		AddEvent[AppExitEvent](eventMap)
-	})
+	a.AddEvent(
+		func(eventMap EventMap) {
+			AddEvent[AppExitEvent](eventMap)
+		},
+	)
 
 	return a
 }
@@ -87,8 +89,7 @@ func (a *App) FlushEvents() {
 	}
 }
 
-func (a *App) Run() error {
-
+func (a *App) SetupSystems() {
 	for _, stage := range a.stages.GetOrderedStages() {
 		queue := NewQueue()
 		for _, fn := range stage.StartUpSystems() {
@@ -101,19 +102,28 @@ func (a *App) Run() error {
 			a.Cancel()
 		}
 	}
+}
+
+func (a *App) RunSystems() {
+	for _, stage := range a.stages.GetOrderedStages() {
+		scheduler := NewScheduler(stage)
+		scheduler.RunSystems(a.world, a.events)
+	}
+
+	reader := NewEventReader(a.Events()[AppExitEvent{}])
+	if reader.Next() {
+		a.Cancel()
+	}
+
+	a.FlushEvents()
+}
+
+func (a *App) Run() error {
+
+	a.SetupSystems()
 
 	for a.running {
-		for _, stage := range a.stages.GetOrderedStages() {
-			scheduler := NewScheduler(stage)
-			scheduler.RunSystems(a.world, a.events)
-		}
-
-		reader := NewEventReader(a.Events()[AppExitEvent{}])
-		if reader.Next() {
-			a.Cancel()
-		}
-
-		a.FlushEvents()
+		a.RunSystems()
 	}
 
 	return nil
