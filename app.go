@@ -108,6 +108,10 @@ func (a *App) SetupSystems(stageFilters ...StageFilterOption) {
 	}
 }
 
+func (a *App) World() *World {
+	return a.world
+}
+
 func (a *App) RunSystems(stageFilters ...StageFilterOption) {
 	for _, stage := range a.stages.GetOrderedStages(stageFilters...) {
 		scheduler := NewScheduler(stage)
