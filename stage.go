@@ -112,14 +112,11 @@ func (s *Stages) GetOrderedStages(filters ...StageFilterOption) []Stage {
 			)
 		} else {
 			if filterLabelsLen > 0 {
-				valids := 0
 				for _, l := range filter.labels {
 					if l == stage.Label() {
-						valids++
+						stages[i] = stage
+						break
 					}
-				}
-				if valids == filterLabelsLen {
-					stages[i] = stage
 				}
 			} else {
 				stages[i] = stage

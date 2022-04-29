@@ -109,4 +109,5 @@ func TestWithStageLabel(t *testing.T) {
 	assert.Equal(t, 1, len(stages.GetOrderedStages()))
 	assert.Equal(t, 1, len(stages.GetOrderedStages(ecs.WithStageLabelFilter(ecs.LabelRender))))
 	assert.Equal(t, 0, len(stages.GetOrderedStages(ecs.WithStageLabelFilter(ecs.LabelUpdate))))
+	assert.Equal(t, 1, len(stages.GetOrderedStages(ecs.WithStageLabelFilter(ecs.LabelUpdate, ecs.LabelRender))))
 }
