@@ -38,6 +38,17 @@ func (w *EventWriter) Send(payload Event) {
 	w.queue = append(w.queue, payload)
 }
 
+func (w *EventWriter) SendOnce(payload Event) {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+	for _, q := range w.queue {
+		if payload == q {
+			return
+		}
+	}
+	w.queue = append(w.queue, payload)
+}
+
 func (w *EventWriter) Queue() []Event {
 	return w.queue
 }
